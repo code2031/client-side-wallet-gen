@@ -25,13 +25,15 @@ Client-side cryptocurrency wallet generator supporting 190 coins across 20 block
 ## Features
 
 - Generates wallet address + private key for each cryptocurrency
-- QR codes for addresses and private keys
-- Click-to-copy for all values
-- Private keys hidden by default with reveal toggle
-- Search and filter by name, symbol, or category
+- QR codes with full-screen modal view for addresses and private keys
+- One-click copy with toast notifications (works on HTTP and HTTPS)
+- Private keys hidden by default with eye-icon reveal toggle
+- Search by name/symbol with `/` keyboard shortcut
+- Filter by category with color-coded badges
 - "Generate All" to create wallets for all visible coins at once
 - Fully client-side — works offline after loading
-- Dark theme UI
+- **Keys are never stored, transmitted, or logged** — they exist only in browser memory
+- Responsive dark theme with animated transitions
 
 ## Address Generation Methods
 
@@ -71,7 +73,7 @@ npm install
 npm run dev
 ```
 
-Opens on [http://localhost:4403](http://localhost:4403).
+Opens on [http://localhost:4403](http://localhost:4403). Accessible from other devices on the network via `http://<your-ip>:4403`.
 
 ## Tech Stack
 
