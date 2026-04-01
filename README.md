@@ -4,13 +4,13 @@ Client-side cryptocurrency wallet generator supporting 504 coins across 20+ bloc
 
 ## Supported Cryptocurrencies (504 coins)
 
-**Layer 1 Blockchains (31):** ShardCoin, Bitcoin, Ethereum, Solana, XRP, Cardano, Tron, Avalanche, Polkadot, TON, NEAR, Aptos, Sui, Algorand, Tezos, Filecoin, Stellar, Hedera, Monero, EOS, Kusama, ICP, Stacks, MultiversX, Flow, Mina, Neo, Waves, Zilliqa, IOTA, Kaspa
+**Layer 1 Blockchains (50+):** ShardCoin, Bitcoin, Ethereum, Solana, XRP, Cardano, Tron, Avalanche, Polkadot, TON, NEAR, Aptos, Sui, Algorand, Tezos, Filecoin, Stellar, Hedera, Monero, EOS, Kusama, ICP, Stacks, MultiversX, Flow, Mina, Neo, Waves, Zilliqa, IOTA, Kaspa, Qtum, Conflux, Shimmer, Aleph Zero, Radix, Verus, Velas, Elastos, and more
 
-**Bitcoin Forks (21):** Litecoin, Dogecoin, Bitcoin Cash, Dash, Zcash, DigiByte, Ravencoin, Bitcoin SV, Decred, Horizen, Syscoin, Namecoin, Vertcoin, Peercoin, Feathercoin, Viacoin, PIVX, Firo, Flux, Verge, Bitcoin Gold
+**Bitcoin Forks (31):** Litecoin, Dogecoin, Bitcoin Cash, Dash, Zcash, DigiByte, Ravencoin, Bitcoin SV, Decred, Horizen, Syscoin, Namecoin, Vertcoin, Peercoin, Feathercoin, Viacoin, PIVX, Firo, Flux, Verge, Bitcoin Gold, Groestlcoin, MonaCoin, BlackCoin, ReddCoin, Einsteinium, Bitcore, Particl, NavCoin, and more
 
-**EVM Chains (40):** BNB, Polygon, Arbitrum, Optimism, Base, Fantom, Cronos, Mantle, Celo, Moonbeam, Metis, Klaytn, Gnosis, Linea, Scroll, zkSync Era, Blast, Flare, VeChain, Harmony, Aurora, Boba, Moonriver, SKALE, Oasis, Zora, Mode, Taiko, Manta, Astar, Ethereum Classic, IoTeX, Neon EVM, Fuse, Telos, KuCoin Chain, OKT Chain, and more
+**EVM Chains (55+):** BNB, Polygon, Arbitrum, Optimism, Base, Fantom, Cronos, Mantle, Celo, Moonbeam, Linea, Scroll, zkSync Era, Blast, Taiko, Manta, Astar, PulseChain, Core, Merlin, ApeChain, Unichain, World Chain, Abstract, Gravity, Kroma, Immutable zkEVM, Degen L3, and many more
 
-**Cosmos Ecosystem (26):** ATOM, Osmosis, Injective, Sei, Celestia, dYdX, Kava, Akash, Secret, Stride, Juno, Regen, Axelar, Persistence, Sommelier, Evmos, Canto, OmniFlix, Stargaze, Neutron, Saga, Dymension, Teritori, Lava, Archway, Nibiru
+**Cosmos Ecosystem (36+):** ATOM, Osmosis, Injective, Sei, Celestia, dYdX, Kava, Akash, Secret, Stride, Juno, Axelar, Evmos, Stargaze, Neutron, Saga, Dymension, Archway, Nibiru, Berachain, Terra 2.0, Terra Classic, Kujira, MANTRA, Babylon, Coreum, and more
 
 **DeFi (42+):** UNI, AAVE, MKR, LDO, SNX, COMP, CRV, 1INCH, PENDLE, EIGEN, ENA, ONDO, stETH, WBTC, SUSHI, YFI, BAL, GMX, RPL, CVX, PancakeSwap, Morpho, Velodrome, Aerodrome, Ether.fi, and many more
 
