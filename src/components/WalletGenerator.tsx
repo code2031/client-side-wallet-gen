@@ -95,6 +95,16 @@ function ShieldIcon() {
   );
 }
 
+function PrintIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 6 2 18 2 18 9" />
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="8" />
+    </svg>
+  );
+}
+
 function XIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -192,6 +202,58 @@ export default function WalletGenerator() {
 
   const toggleReveal = useCallback((id: string) => {
     setRevealed(prev => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  const printWallet = useCallback((coin: CoinDefinition, wallet: WalletResult) => {
+    const iconColor = coin.color === '#000000' ? '#333' : coin.color;
+    const noteHtml = wallet.note
+      ? `<div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;padding:10px;font-size:11px;color:#92400e;margin-bottom:20px">${wallet.note}</div>`
+      : '';
+    const html = [
+      '<!DOCTYPE html><html><head>',
+      `<title>${coin.name} Paper Wallet</title>`,
+      '<style>',
+      '*{margin:0;padding:0;box-sizing:border-box}',
+      "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:40px;color:#111;max-width:600px;margin:0 auto}",
+      'h1{font-size:22px;margin-bottom:4px}',
+      '.sub{color:#666;font-size:13px;margin-bottom:30px}',
+      '.section{margin-bottom:28px;page-break-inside:avoid}',
+      '.label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#888;font-weight:600;margin-bottom:8px}',
+      ".value{font-family:'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;word-break:break-all;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:6px;padding:10px;line-height:1.6}",
+      '.qr{margin-top:12px;text-align:center}',
+      '.qr canvas{border:1px solid #e0e0e0;border-radius:8px;padding:12px}',
+      '.warn{margin-top:32px;padding:12px;border:2px solid #dc2626;border-radius:8px;color:#dc2626;font-size:11px;font-weight:600;text-align:center}',
+      '.footer{margin-top:24px;font-size:10px;color:#aaa;text-align:center}',
+      '.header-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}',
+      '.coin-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:11px}',
+      '@media print{body{padding:30px}}',
+      '</style></head><body>',
+      '<div class="header-row">',
+      `<div class="coin-icon" style="background:${iconColor}">${coin.symbol.slice(0, 3)}</div>`,
+      `<div><h1>${coin.name} Paper Wallet</h1>`,
+      `<div class="sub">${coin.symbol} &mdash; Generated ${new Date().toLocaleDateString()}</div></div></div>`,
+      '<div class="section"><div class="label">Public Address</div>',
+      `<div class="value">${wallet.address}</div>`,
+      '<div class="qr" id="qr-addr"></div></div>',
+      '<div class="section"><div class="label">Private Key</div>',
+      `<div class="value">${wallet.privateKey}</div>`,
+      '<div class="qr" id="qr-key"></div></div>',
+      noteHtml,
+      '<div class="warn">KEEP THIS SAFE &mdash; Never share your private key with anyone.</div>',
+      '<div class="footer">Generated client-side &mdash; no keys were transmitted or stored.</div>',
+      '<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></scr' + 'ipt>',
+      '<script>',
+      'function renderQR(id,text){var c=document.createElement("canvas");',
+      'QRCode.toCanvas(c,text,{width:180,margin:0},function(){document.getElementById(id).appendChild(c)});}',
+      `renderQR("qr-addr",${JSON.stringify(wallet.address)});`,
+      `renderQR("qr-key",${JSON.stringify(wallet.privateKey)});`,
+      'setTimeout(function(){window.print()},600);',
+      '</scr' + 'ipt></body></html>',
+    ].join('\n');
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, '_blank', 'width=700,height=900');
+    if (w) w.onafterprint = () => URL.revokeObjectURL(url);
   }, []);
 
   return (
@@ -319,6 +381,7 @@ export default function WalletGenerator() {
               onCopy={copy}
               onToggleReveal={() => toggleReveal(coin.id)}
               onExpandQR={setQrModal}
+              onPrint={() => wallets[coin.id] && printWallet(coin, wallets[coin.id])}
             />
           ))}
         </div>
@@ -430,6 +493,7 @@ function CoinCard({
   onCopy,
   onToggleReveal,
   onExpandQR,
+  onPrint,
 }: {
   coin: CoinDefinition;
   wallet: WalletResult | undefined;
@@ -439,6 +503,7 @@ function CoinCard({
   onCopy: (text: string, id: string) => void;
   onToggleReveal: () => void;
   onExpandQR: (v: { coinId: string; field: 'addr' | 'key' }) => void;
+  onPrint: () => void;
 }) {
   const bgColor =
     coin.color === '#000000' || coin.color === '#1C1C1C' || coin.color === '#1B1B1B' || coin.color === '#1E1E1E'
@@ -558,14 +623,23 @@ function CoinCard({
             </div>
           )}
 
-          {/* Regenerate */}
-          <button
-            onClick={onGenerate}
-            className="w-full flex items-center justify-center gap-1.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] text-zinc-600 hover:text-zinc-300 rounded-xl py-2 text-[11px] font-medium transition-all"
-          >
-            <RefreshIcon />
-            Regenerate
-          </button>
+          {/* Actions */}
+          <div className="flex gap-2">
+            <button
+              onClick={onPrint}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] text-zinc-600 hover:text-zinc-300 rounded-xl py-2 text-[11px] font-medium transition-all"
+            >
+              <PrintIcon />
+              Print
+            </button>
+            <button
+              onClick={onGenerate}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] text-zinc-600 hover:text-zinc-300 rounded-xl py-2 text-[11px] font-medium transition-all"
+            >
+              <RefreshIcon />
+              Regenerate
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@ import type { CoinDefinition } from './types';
 
 export const coins: CoinDefinition[] = [
   // ── Layer 1 Blockchains ──
+  { id: 'shrd', name: 'ShardCoin', symbol: 'SHRD', generator: 'btc-legacy', params: { versionByte: 0x3f, wifByte: 0xbf }, category: 'Layer 1', color: '#6C3AED' },
   { id: 'btc', name: 'Bitcoin', symbol: 'BTC', generator: 'btc-segwit', params: { hrp: 'bc' }, category: 'Layer 1', color: '#F7931A' },
   { id: 'eth', name: 'Ethereum', symbol: 'ETH', generator: 'evm', params: {}, category: 'Layer 1', color: '#627EEA' },
   { id: 'sol', name: 'Solana', symbol: 'SOL', generator: 'solana', params: {}, category: 'Layer 1', color: '#9945FF' },
@@ -228,4 +229,112 @@ export const coins: CoinDefinition[] = [
   { id: 'ppc', name: 'Peercoin', symbol: 'PPC', generator: 'btc-legacy', params: { versionByte: 0x37, wifByte: 0xb7 }, category: 'Bitcoin Fork', color: '#3CB054' },
   { id: 'ftc', name: 'Feathercoin', symbol: 'FTC', generator: 'btc-legacy', params: { versionByte: 0x0e, wifByte: 0x8e }, category: 'Bitcoin Fork', color: '#27323A' },
   { id: 'via', name: 'Viacoin', symbol: 'VIA', generator: 'btc-legacy', params: { versionByte: 0x47, wifByte: 0xc7 }, category: 'Bitcoin Fork', color: '#565656' },
+
+  // ── Additional Layer 1 ──
+  { id: 'icp', name: 'Internet Computer', symbol: 'ICP', generator: 'evm', params: {}, category: 'Layer 1', color: '#29ABE2' },
+  { id: 'stx', name: 'Stacks', symbol: 'STX', generator: 'btc-legacy', params: { versionByte: 0x16, wifByte: 0x80 }, category: 'Layer 1', color: '#5546FF' },
+  { id: 'egld', name: 'MultiversX', symbol: 'EGLD', generator: 'evm', params: {}, category: 'Layer 1', color: '#23F7DD' },
+  { id: 'flow', name: 'Flow', symbol: 'FLOW', generator: 'evm', params: {}, category: 'Layer 1', color: '#00EF8B' },
+  { id: 'mina', name: 'Mina Protocol', symbol: 'MINA', generator: 'evm', params: {}, category: 'Layer 1', color: '#E49B13' },
+  { id: 'neo', name: 'Neo', symbol: 'NEO', generator: 'evm', params: {}, category: 'Layer 1', color: '#00E599' },
+  { id: 'waves', name: 'Waves', symbol: 'WAVES', generator: 'evm', params: {}, category: 'Layer 1', color: '#0055FF' },
+  { id: 'zil', name: 'Zilliqa', symbol: 'ZIL', generator: 'evm', params: {}, category: 'Layer 1', color: '#49C1BF' },
+  { id: 'iota', name: 'IOTA', symbol: 'IOTA', generator: 'evm', params: {}, category: 'Layer 1', color: '#242424' },
+  { id: 'kas', name: 'Kaspa', symbol: 'KAS', generator: 'evm', params: {}, category: 'Layer 1', color: '#49EACB' },
+
+  // ── More EVM Chains ──
+  { id: 'ethw', name: 'Ethereum PoW', symbol: 'ETHW', generator: 'evm', params: {}, category: 'EVM Chain', color: '#627EEA', parentChain: 'EVM' },
+  { id: 'etc', name: 'Ethereum Classic', symbol: 'ETC', generator: 'evm', params: {}, category: 'EVM Chain', color: '#328332', parentChain: 'EVM' },
+  { id: 'iotx', name: 'IoTeX', symbol: 'IOTX', generator: 'evm', params: {}, category: 'EVM Chain', color: '#44FFB2', parentChain: 'EVM' },
+  { id: 'sx', name: 'SX Network', symbol: 'SX', generator: 'evm', params: {}, category: 'EVM Chain', color: '#1C60FF', parentChain: 'EVM' },
+  { id: 'neon', name: 'Neon EVM', symbol: 'NEON', generator: 'evm', params: {}, category: 'EVM Chain', color: '#E93EE9', parentChain: 'EVM' },
+  { id: 'fuse', name: 'Fuse', symbol: 'FUSE', generator: 'evm', params: {}, category: 'EVM Chain', color: '#B4F94E', parentChain: 'EVM' },
+  { id: 'telos', name: 'Telos EVM', symbol: 'TLOS', generator: 'evm', params: {}, category: 'EVM Chain', color: '#571AFF', parentChain: 'EVM' },
+  { id: 'pgn', name: 'PGN', symbol: 'PGN', generator: 'evm', params: {}, category: 'EVM Chain', color: '#4F46E5', parentChain: 'EVM' },
+  { id: 'kcc', name: 'KuCoin Chain', symbol: 'KCS', generator: 'evm', params: {}, category: 'EVM Chain', color: '#23AF91', parentChain: 'EVM' },
+  { id: 'okt', name: 'OKT Chain', symbol: 'OKT', generator: 'evm', params: {}, category: 'EVM Chain', color: '#3C7EFF', parentChain: 'EVM' },
+
+  // ── More DeFi ──
+  { id: 'cake', name: 'PancakeSwap', symbol: 'CAKE', generator: 'evm', params: {}, category: 'DeFi', color: '#D1884F', parentChain: 'Ethereum' },
+  { id: 'joe', name: 'Trader Joe', symbol: 'JOE', generator: 'evm', params: {}, category: 'DeFi', color: '#E94642', parentChain: 'Ethereum' },
+  { id: 'spell', name: 'Spell Token', symbol: 'SPELL', generator: 'evm', params: {}, category: 'DeFi', color: '#824EE2', parentChain: 'Ethereum' },
+  { id: 'stkGHO', name: 'Staked GHO', symbol: 'stkGHO', generator: 'evm', params: {}, category: 'DeFi', color: '#B6509E', parentChain: 'Ethereum' },
+  { id: 'morpho', name: 'Morpho', symbol: 'MORPHO', generator: 'evm', params: {}, category: 'DeFi', color: '#1B1464', parentChain: 'Ethereum' },
+  { id: 'rdnt', name: 'Radiant Capital', symbol: 'RDNT', generator: 'evm', params: {}, category: 'DeFi', color: '#00D4FF', parentChain: 'Ethereum' },
+  { id: 'velo', name: 'Velodrome', symbol: 'VELO', generator: 'evm', params: {}, category: 'DeFi', color: '#0052FF', parentChain: 'Ethereum' },
+  { id: 'aero', name: 'Aerodrome', symbol: 'AERO', generator: 'evm', params: {}, category: 'DeFi', color: '#0052FF', parentChain: 'Ethereum' },
+  { id: 'usual', name: 'Usual', symbol: 'USUAL', generator: 'evm', params: {}, category: 'DeFi', color: '#000000', parentChain: 'Ethereum' },
+  { id: 'sky', name: 'Sky', symbol: 'SKY', generator: 'evm', params: {}, category: 'DeFi', color: '#73CDFF', parentChain: 'Ethereum' },
+  { id: 'ethfi', name: 'Ether.fi', symbol: 'ETHFI', generator: 'evm', params: {}, category: 'DeFi', color: '#7C3AED', parentChain: 'Ethereum' },
+  { id: 'rseth', name: 'rsETH', symbol: 'rsETH', generator: 'evm', params: {}, category: 'DeFi', color: '#3B82F6', parentChain: 'Ethereum' },
+  { id: 'reth', name: 'Rocket Pool ETH', symbol: 'rETH', generator: 'evm', params: {}, category: 'DeFi', color: '#E8754A', parentChain: 'Ethereum' },
+  { id: 'cbeth', name: 'Coinbase stETH', symbol: 'cbETH', generator: 'evm', params: {}, category: 'DeFi', color: '#0052FF', parentChain: 'Ethereum' },
+
+  // ── More Infrastructure ──
+  { id: 'ens', name: 'ENS', symbol: 'ENS', generator: 'evm', params: {}, category: 'Infrastructure', color: '#5298FF', parentChain: 'Ethereum' },
+  { id: 'safe', name: 'Safe', symbol: 'SAFE', generator: 'evm', params: {}, category: 'Infrastructure', color: '#12FF80', parentChain: 'Ethereum' },
+  { id: 'matic_old', name: 'Polygon (old)', symbol: 'MATIC', generator: 'evm', params: {}, category: 'Infrastructure', color: '#8247E5', parentChain: 'Ethereum' },
+  { id: 'gal', name: 'Galxe', symbol: 'GAL', generator: 'evm', params: {}, category: 'Infrastructure', color: '#000000', parentChain: 'Ethereum' },
+  { id: 'cyber', name: 'CyberConnect', symbol: 'CYBER', generator: 'evm', params: {}, category: 'Infrastructure', color: '#000000', parentChain: 'Ethereum' },
+  { id: 'dimo', name: 'DIMO', symbol: 'DIMO', generator: 'evm', params: {}, category: 'Infrastructure', color: '#43B1B1', parentChain: 'Ethereum' },
+  { id: 'iotex_sol', name: 'Nosana', symbol: 'NOS', generator: 'solana', params: {}, category: 'Infrastructure', color: '#18181B', parentChain: 'Solana' },
+  { id: 'io', name: 'io.net', symbol: 'IO', generator: 'solana', params: {}, category: 'Infrastructure', color: '#000000', parentChain: 'Solana' },
+  { id: 'grass', name: 'Grass', symbol: 'GRASS', generator: 'solana', params: {}, category: 'Infrastructure', color: '#00C853', parentChain: 'Solana' },
+  { id: 'ait', name: 'AIT Protocol', symbol: 'AIT', generator: 'evm', params: {}, category: 'Infrastructure', color: '#7C3AED', parentChain: 'Ethereum' },
+
+  // ── More Cosmos ──
+  { id: 'saga', name: 'Saga', symbol: 'SAGA', generator: 'cosmos', params: { prefix: 'saga' }, category: 'Cosmos', color: '#000000' },
+  { id: 'dym', name: 'Dymension', symbol: 'DYM', generator: 'cosmos', params: { prefix: 'dym' }, category: 'Cosmos', color: '#FF5733' },
+  { id: 'tori', name: 'Teritori', symbol: 'TORI', generator: 'cosmos', params: { prefix: 'tori' }, category: 'Cosmos', color: '#16A34A' },
+  { id: 'lava', name: 'Lava Network', symbol: 'LAVA', generator: 'cosmos', params: { prefix: 'lava' }, category: 'Cosmos', color: '#FF4400' },
+  { id: 'archway', name: 'Archway', symbol: 'ARCH', generator: 'cosmos', params: { prefix: 'archway' }, category: 'Cosmos', color: '#FF4D00' },
+  { id: 'nibiru', name: 'Nibiru', symbol: 'NIBI', generator: 'cosmos', params: { prefix: 'nibi' }, category: 'Cosmos', color: '#5E2BFF' },
+
+  // ── More Memecoins ──
+  { id: 'trump', name: 'TRUMP', symbol: 'TRUMP', generator: 'solana', params: {}, category: 'Memecoin', color: '#B91C1C', parentChain: 'Solana' },
+  { id: 'pnut', name: 'Peanut', symbol: 'PNUT', generator: 'solana', params: {}, category: 'Memecoin', color: '#D97706', parentChain: 'Solana' },
+  { id: 'fartcoin', name: 'Fartcoin', symbol: 'FARTCOIN', generator: 'solana', params: {}, category: 'Memecoin', color: '#6B7280', parentChain: 'Solana' },
+  { id: 'goat', name: 'Goatseus Maximus', symbol: 'GOAT', generator: 'solana', params: {}, category: 'Memecoin', color: '#84CC16', parentChain: 'Solana' },
+  { id: 'act', name: 'Act I', symbol: 'ACT', generator: 'solana', params: {}, category: 'Memecoin', color: '#DC2626', parentChain: 'Solana' },
+  { id: 'ai16z', name: 'ai16z', symbol: 'AI16Z', generator: 'solana', params: {}, category: 'Memecoin', color: '#2563EB', parentChain: 'Solana' },
+  { id: 'griffain', name: 'Griffain', symbol: 'GRIFFAIN', generator: 'solana', params: {}, category: 'Memecoin', color: '#F59E0B', parentChain: 'Solana' },
+  { id: 'moodeng', name: 'Moo Deng', symbol: 'MOODENG', generator: 'solana', params: {}, category: 'Memecoin', color: '#FB923C', parentChain: 'Solana' },
+  { id: 'spx', name: 'SPX6900', symbol: 'SPX', generator: 'evm', params: {}, category: 'Memecoin', color: '#059669', parentChain: 'Ethereum' },
+  { id: 'brett', name: 'Brett', symbol: 'BRETT', generator: 'evm', params: {}, category: 'Memecoin', color: '#2563EB', parentChain: 'Ethereum' },
+  { id: 'toshi', name: 'Toshi', symbol: 'TOSHI', generator: 'evm', params: {}, category: 'Memecoin', color: '#3B82F6', parentChain: 'Ethereum' },
+  { id: 'ladys', name: 'Milady', symbol: 'LADYS', generator: 'evm', params: {}, category: 'Memecoin', color: '#E879F9', parentChain: 'Ethereum' },
+  { id: 'mother', name: 'Mother Iggy', symbol: 'MOTHER', generator: 'solana', params: {}, category: 'Memecoin', color: '#EC4899', parentChain: 'Solana' },
+
+  // ── More Stablecoins ──
+  { id: 'usde', name: 'USDe', symbol: 'USDe', generator: 'evm', params: {}, category: 'Stablecoin', color: '#1C1C1C', parentChain: 'Ethereum' },
+  { id: 'mkusd', name: 'USDS', symbol: 'USDS', generator: 'evm', params: {}, category: 'Stablecoin', color: '#73CDFF', parentChain: 'Ethereum' },
+  { id: 'eurc', name: 'Euro Coin', symbol: 'EURC', generator: 'evm', params: {}, category: 'Stablecoin', color: '#2775CA', parentChain: 'Ethereum' },
+  { id: 'eur_t', name: 'Tether EUR', symbol: 'EURT', generator: 'evm', params: {}, category: 'Stablecoin', color: '#26A17B', parentChain: 'Ethereum' },
+
+  // ── More Gaming ──
+  { id: 'ron', name: 'Ronin', symbol: 'RON', generator: 'evm', params: {}, category: 'Gaming', color: '#1273EA', parentChain: 'EVM' },
+  { id: 'imx_token', name: 'Immutable X', symbol: 'IMX', generator: 'evm', params: {}, category: 'Gaming', color: '#00C3FF', parentChain: 'Ethereum' },
+  { id: 'xai', name: 'Xai', symbol: 'XAI', generator: 'evm', params: {}, category: 'Gaming', color: '#F5274E', parentChain: 'EVM' },
+  { id: 'mavia', name: 'Heroes of Mavia', symbol: 'MAVIA', generator: 'evm', params: {}, category: 'Gaming', color: '#FF6B00', parentChain: 'Ethereum' },
+  { id: 'nft', name: 'APENFT', symbol: 'NFT', generator: 'tron', params: {}, category: 'Gaming', color: '#2196F3', parentChain: 'Tron' },
+  { id: 'polis', name: 'Star Atlas DAO', symbol: 'POLIS', generator: 'solana', params: {}, category: 'Gaming', color: '#FF3D71', parentChain: 'Solana' },
+  { id: 'slp', name: 'Smooth Love Potion', symbol: 'SLP', generator: 'evm', params: {}, category: 'Gaming', color: '#F472B6', parentChain: 'Ethereum' },
+  { id: 'gst', name: 'Green Satoshi', symbol: 'GST', generator: 'solana', params: {}, category: 'Gaming', color: '#BDFF00', parentChain: 'Solana' },
+
+  // ── More Solana SPL ──
+  { id: 'kmno', name: 'Kamino', symbol: 'KMNO', generator: 'solana', params: {}, category: 'DeFi', color: '#5B21B6', parentChain: 'Solana' },
+  { id: 'sonic_sol', name: 'Sonic SVM', symbol: 'SONIC', generator: 'solana', params: {}, category: 'Infrastructure', color: '#1D4ED8', parentChain: 'Solana' },
+  { id: 'me', name: 'Magic Eden', symbol: 'ME', generator: 'solana', params: {}, category: 'Infrastructure', color: '#E11D48', parentChain: 'Solana' },
+  { id: 'zeta', name: 'ZetaChain', symbol: 'ZETA', generator: 'evm', params: {}, category: 'Infrastructure', color: '#00BC8D', parentChain: 'EVM' },
+  { id: 'jlp', name: 'Jupiter LP', symbol: 'JLP', generator: 'solana', params: {}, category: 'DeFi', color: '#31D0AA', parentChain: 'Solana' },
+  { id: 'msol', name: 'Marinade SOL', symbol: 'mSOL', generator: 'solana', params: {}, category: 'DeFi', color: '#4E9A6D', parentChain: 'Solana' },
+  { id: 'jsol', name: 'JitoSOL', symbol: 'JITOSOL', generator: 'solana', params: {}, category: 'DeFi', color: '#67E8C4', parentChain: 'Solana' },
+  { id: 'bsol', name: 'BlazeStake SOL', symbol: 'bSOL', generator: 'solana', params: {}, category: 'DeFi', color: '#F97316', parentChain: 'Solana' },
+
+  // ── More Bitcoin Forks ──
+  { id: 'pivx', name: 'PIVX', symbol: 'PIVX', generator: 'btc-legacy', params: { versionByte: 0x1e, wifByte: 0xd4 }, category: 'Bitcoin Fork', color: '#5E4778' },
+  { id: 'firo', name: 'Firo', symbol: 'FIRO', generator: 'btc-legacy', params: { versionByte: 0x52, wifByte: 0xd2 }, category: 'Bitcoin Fork', color: '#9B1C1C' },
+  { id: 'flux', name: 'Flux', symbol: 'FLUX', generator: 'btc-legacy', params: { versionByte: 0x1c, wifByte: 0x80 }, category: 'Bitcoin Fork', color: '#2B6CB0' },
+  { id: 'xvg', name: 'Verge', symbol: 'XVG', generator: 'btc-legacy', params: { versionByte: 0x1e, wifByte: 0x9e }, category: 'Bitcoin Fork', color: '#00CBFF' },
+  { id: 'btg', name: 'Bitcoin Gold', symbol: 'BTG', generator: 'btc-legacy', params: { versionByte: 0x26, wifByte: 0x80 }, category: 'Bitcoin Fork', color: '#EBA809' },
 ];

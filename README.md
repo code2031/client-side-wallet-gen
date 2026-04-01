@@ -1,26 +1,26 @@
 # Crypto Wallet Generator
 
-Client-side cryptocurrency wallet generator supporting 190 coins across 20 blockchain families. All keys are generated locally in your browser using cryptographic randomness — nothing is transmitted to any server.
+Client-side cryptocurrency wallet generator supporting 279 coins across 20 blockchain families. All keys are generated locally in your browser using cryptographic randomness — nothing is transmitted to any server.
 
-## Supported Cryptocurrencies (190 coins)
+## Supported Cryptocurrencies (279 coins)
 
-**Layer 1 Blockchains (20):** Bitcoin, Ethereum, Solana, XRP, Cardano, Tron, Avalanche, Polkadot, TON, NEAR, Aptos, Sui, Algorand, Tezos, Filecoin, Stellar, Hedera, Monero, EOS, Kusama
+**Layer 1 Blockchains (31):** ShardCoin, Bitcoin, Ethereum, Solana, XRP, Cardano, Tron, Avalanche, Polkadot, TON, NEAR, Aptos, Sui, Algorand, Tezos, Filecoin, Stellar, Hedera, Monero, EOS, Kusama, ICP, Stacks, MultiversX, Flow, Mina, Neo, Waves, Zilliqa, IOTA, Kaspa
 
-**Bitcoin Forks (16):** Litecoin, Dogecoin, Bitcoin Cash, Dash, Zcash, DigiByte, Ravencoin, Bitcoin SV, Decred, Horizen, Syscoin, Namecoin, Vertcoin, Peercoin, Feathercoin, Viacoin
+**Bitcoin Forks (21):** Litecoin, Dogecoin, Bitcoin Cash, Dash, Zcash, DigiByte, Ravencoin, Bitcoin SV, Decred, Horizen, Syscoin, Namecoin, Vertcoin, Peercoin, Feathercoin, Viacoin, PIVX, Firo, Flux, Verge, Bitcoin Gold
 
-**EVM Chains (30):** BNB, Polygon, Arbitrum, Optimism, Base, Fantom, Cronos, Mantle, Celo, Moonbeam, Metis, Klaytn, Gnosis, Linea, Scroll, zkSync Era, Blast, Flare, VeChain, Harmony, Aurora, Boba, Moonriver, SKALE, Oasis, Zora, Mode, Taiko, Manta, Astar
+**EVM Chains (40):** BNB, Polygon, Arbitrum, Optimism, Base, Fantom, Cronos, Mantle, Celo, Moonbeam, Metis, Klaytn, Gnosis, Linea, Scroll, zkSync Era, Blast, Flare, VeChain, Harmony, Aurora, Boba, Moonriver, SKALE, Oasis, Zora, Mode, Taiko, Manta, Astar, Ethereum Classic, IoTeX, Neon EVM, Fuse, Telos, KuCoin Chain, OKT Chain, and more
 
-**Cosmos Ecosystem (20):** ATOM, Osmosis, Injective, Sei, Celestia, dYdX, Kava, Akash, Secret, Stride, Juno, Regen, Axelar, Persistence, Sommelier, Evmos, Canto, OmniFlix, Stargaze, Neutron
+**Cosmos Ecosystem (26):** ATOM, Osmosis, Injective, Sei, Celestia, dYdX, Kava, Akash, Secret, Stride, Juno, Regen, Axelar, Persistence, Sommelier, Evmos, Canto, OmniFlix, Stargaze, Neutron, Saga, Dymension, Teritori, Lava, Archway, Nibiru
 
-**DeFi (28):** UNI, AAVE, MKR, LDO, SNX, COMP, CRV, 1INCH, PENDLE, EIGEN, ENA, ONDO, stETH, WBTC, SUSHI, YFI, BAL, GMX, RPL, CVX, BLUR, LRC, SSV, DODO, BNT, KNC, ANKR, JUP, RAY, JTO, ORCA, DRIFT, and more
+**DeFi (42+):** UNI, AAVE, MKR, LDO, SNX, COMP, CRV, 1INCH, PENDLE, EIGEN, ENA, ONDO, stETH, WBTC, SUSHI, YFI, BAL, GMX, RPL, CVX, PancakeSwap, Morpho, Velodrome, Aerodrome, Ether.fi, and many more
 
-**Stablecoins (12):** USDT, USDC, DAI, TUSD, FRAX, PYUSD, FDUSD, LUSD, GUSD, USDD, crvUSD, GHO
+**Stablecoins (16):** USDT, USDC, DAI, TUSD, FRAX, PYUSD, FDUSD, LUSD, GUSD, USDD, crvUSD, GHO, USDe, USDS, EURC, EURT
 
-**Memecoins (14):** SHIB, PEPE, FLOKI, BONK, WIF, TURBO, MEME, NEIRO, BOME, MEW, POPCAT, MYRO, SAMO, BABYDOGE
+**Memecoins (27):** SHIB, PEPE, FLOKI, BONK, WIF, TURBO, TRUMP, GOAT, Fartcoin, ai16z, Brett, Moo Deng, SPX6900, and many more
 
-**Infrastructure (21):** LINK, GRT, RNDR, FET, QNT, THETA, IMX, WLD, AR, OCEAN, API3, STORJ, LPT, MASK, BAT, ZRX, TRB, REQ, BAND, NMR, RLC, PYTH, TNSR, HNT, Wormhole
+**Infrastructure (31):** LINK, GRT, RNDR, FET, QNT, THETA, IMX, WLD, ENS, Safe, io.net, Grass, Magic Eden, ZetaChain, and many more
 
-**Gaming (17):** AXS, SAND, MANA, GALA, ENJ, APE, ILV, STEPN, Star Atlas, GODS, YGG, MAGIC, BEAM, PRIME, SUPER, PIXEL, PORTAL
+**Gaming (25):** AXS, SAND, MANA, GALA, ENJ, APE, ILV, STEPN, Star Atlas, Ronin, Xai, Heroes of Mavia, and more
 
 ## Features
 
@@ -33,6 +33,7 @@ Client-side cryptocurrency wallet generator supporting 190 coins across 20 block
 - "Generate All" to create wallets for all visible coins at once
 - Fully client-side — works offline after loading
 - **Keys are never stored, transmitted, or logged** — they exist only in browser memory
+- **Print Wallet** — paper wallet view with QR codes, opens print dialog
 - Responsive dark theme with animated transitions
 
 ## Address Generation Methods
