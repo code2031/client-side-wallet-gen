@@ -204,57 +204,16 @@ export default function WalletGenerator() {
     setRevealed(prev => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
-  const printWallet = useCallback((coin: CoinDefinition, wallet: WalletResult) => {
-    const iconColor = coin.color === '#000000' ? '#333' : coin.color;
-    const noteHtml = wallet.note
-      ? `<div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;padding:10px;font-size:11px;color:#92400e;margin-bottom:20px">${wallet.note}</div>`
-      : '';
-    const html = [
-      '<!DOCTYPE html><html><head>',
-      `<title>${coin.name} Paper Wallet</title>`,
-      '<style>',
-      '*{margin:0;padding:0;box-sizing:border-box}',
-      "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:40px;color:#111;max-width:600px;margin:0 auto}",
-      'h1{font-size:22px;margin-bottom:4px}',
-      '.sub{color:#666;font-size:13px;margin-bottom:30px}',
-      '.section{margin-bottom:28px;page-break-inside:avoid}',
-      '.label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#888;font-weight:600;margin-bottom:8px}',
-      ".value{font-family:'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;word-break:break-all;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:6px;padding:10px;line-height:1.6}",
-      '.qr{margin-top:12px;text-align:center}',
-      '.qr canvas{border:1px solid #e0e0e0;border-radius:8px;padding:12px}',
-      '.warn{margin-top:32px;padding:12px;border:2px solid #dc2626;border-radius:8px;color:#dc2626;font-size:11px;font-weight:600;text-align:center}',
-      '.footer{margin-top:24px;font-size:10px;color:#aaa;text-align:center}',
-      '.header-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}',
-      '.coin-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:11px}',
-      '@media print{body{padding:30px}}',
-      '</style></head><body>',
-      '<div class="header-row">',
-      `<div class="coin-icon" style="background:${iconColor}">${coin.symbol.slice(0, 3)}</div>`,
-      `<div><h1>${coin.name} Paper Wallet</h1>`,
-      `<div class="sub">${coin.symbol} &mdash; Generated ${new Date().toLocaleDateString()}</div></div></div>`,
-      '<div class="section"><div class="label">Public Address</div>',
-      `<div class="value">${wallet.address}</div>`,
-      '<div class="qr" id="qr-addr"></div></div>',
-      '<div class="section"><div class="label">Private Key</div>',
-      `<div class="value">${wallet.privateKey}</div>`,
-      '<div class="qr" id="qr-key"></div></div>',
-      noteHtml,
-      '<div class="warn">KEEP THIS SAFE &mdash; Never share your private key with anyone.</div>',
-      '<div class="footer">Generated client-side &mdash; no keys were transmitted or stored.</div>',
-      '<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></scr' + 'ipt>',
-      '<script>',
-      'function renderQR(id,text){var c=document.createElement("canvas");',
-      'QRCode.toCanvas(c,text,{width:180,margin:0},function(){document.getElementById(id).appendChild(c)});}',
-      `renderQR("qr-addr",${JSON.stringify(wallet.address)});`,
-      `renderQR("qr-key",${JSON.stringify(wallet.privateKey)});`,
-      'setTimeout(function(){window.print()},600);',
-      '</scr' + 'ipt></body></html>',
-    ].join('\n');
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const w = window.open(url, '_blank', 'width=700,height=900');
-    if (w) w.onafterprint = () => URL.revokeObjectURL(url);
-  }, []);
+  const [printData, setPrintData] = useState<{ coin: CoinDefinition; wallet: WalletResult } | null>(null);
+
+  useEffect(() => {
+    if (!printData) return;
+    const timer = setTimeout(() => {
+      window.print();
+      setPrintData(null);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [printData]);
 
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-100">
@@ -381,7 +340,7 @@ export default function WalletGenerator() {
               onCopy={copy}
               onToggleReveal={() => toggleReveal(coin.id)}
               onExpandQR={setQrModal}
-              onPrint={() => wallets[coin.id] && printWallet(coin, wallets[coin.id])}
+              onPrint={() => wallets[coin.id] && setPrintData({ coin, wallet: wallets[coin.id] })}
             />
           ))}
         </div>
@@ -475,6 +434,65 @@ export default function WalletGenerator() {
           <div className="bg-zinc-800 border border-zinc-700/50 text-zinc-200 text-xs font-medium px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2">
             <CheckIcon size={12} />
             {toast}
+          </div>
+        </div>
+      )}
+
+      {/* ── Print Overlay (visible only in @media print) ── */}
+      {printData && (
+        <div className="print-overlay">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontWeight: 'bold', fontSize: 11,
+              background: printData.coin.color === '#000000' ? '#333' : printData.coin.color,
+            }}>
+              {printData.coin.symbol.slice(0, 3)}
+            </div>
+            <div>
+              <h1 style={{ fontSize: 22, margin: 0 }}>{printData.coin.name} Paper Wallet</h1>
+              <p style={{ color: '#666', fontSize: 13, margin: 0 }}>
+                {printData.coin.symbol} &mdash; {new Date().toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: 1.5, color: '#888', fontWeight: 600, marginBottom: 8 }}>
+              Public Address
+            </div>
+            <div style={{ fontFamily: 'monospace', fontSize: 11, wordBreak: 'break-all' as const, background: '#f5f5f5', border: '1px solid #e0e0e0', borderRadius: 6, padding: 10, lineHeight: 1.6 }}>
+              {printData.wallet.address}
+            </div>
+            <div style={{ marginTop: 12, textAlign: 'center' as const }}>
+              <QRCodeSVG value={printData.wallet.address} size={160} level="M" />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: 1.5, color: '#888', fontWeight: 600, marginBottom: 8 }}>
+              Private Key
+            </div>
+            <div style={{ fontFamily: 'monospace', fontSize: 11, wordBreak: 'break-all' as const, background: '#f5f5f5', border: '1px solid #e0e0e0', borderRadius: 6, padding: 10, lineHeight: 1.6 }}>
+              {printData.wallet.privateKey}
+            </div>
+            <div style={{ marginTop: 12, textAlign: 'center' as const }}>
+              <QRCodeSVG value={printData.wallet.privateKey} size={160} level="M" />
+            </div>
+          </div>
+
+          {printData.wallet.note && (
+            <div style={{ background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 6, padding: 10, fontSize: 11, color: '#92400e', marginBottom: 20 }}>
+              {printData.wallet.note}
+            </div>
+          )}
+
+          <div style={{ marginTop: 32, padding: 12, border: '2px solid #dc2626', borderRadius: 8, color: '#dc2626', fontSize: 11, fontWeight: 600, textAlign: 'center' as const }}>
+            KEEP THIS SAFE &mdash; Never share your private key with anyone.
+          </div>
+          <div style={{ marginTop: 16, fontSize: 10, color: '#aaa', textAlign: 'center' as const }}>
+            Generated client-side &mdash; no keys were transmitted or stored.
           </div>
         </div>
       )}

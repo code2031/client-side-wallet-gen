@@ -539,4 +539,73 @@ export const coins: CoinDefinition[] = [
   { id: 'chz', name: 'Chiliz', symbol: 'CHZ', generator: 'evm', params: {}, category: 'Infrastructure', color: '#CD0124', parentChain: 'Ethereum' },
   { id: 'hot', name: 'Holo', symbol: 'HOT', generator: 'evm', params: {}, category: 'Infrastructure', color: '#00838F', parentChain: 'Ethereum' },
   { id: 'mpl', name: 'Maple Finance', symbol: 'MPL', generator: 'evm', params: {}, category: 'DeFi', color: '#9333EA', parentChain: 'Ethereum' },
+
+  // ══════════════════════════════════════════════════════════════════
+  // 65 MORE BLOCKCHAINS
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── EVM L2/L3 Chains ──
+  { id: 'gravity', name: 'Gravity', symbol: 'G', generator: 'evm', params: {}, category: 'EVM Chain', color: '#6366F1', parentChain: 'EVM' },
+  { id: 'snaxchain', name: 'Snax Chain', symbol: 'SNAX', generator: 'evm', params: {}, category: 'EVM Chain', color: '#2563EB', parentChain: 'EVM' },
+  { id: 'kroma', name: 'Kroma', symbol: 'KRO', generator: 'evm', params: {}, category: 'EVM Chain', color: '#48BB78', parentChain: 'EVM' },
+  { id: 'shape', name: 'Shape', symbol: 'SHAPE', generator: 'evm', params: {}, category: 'EVM Chain', color: '#000000', parentChain: 'EVM' },
+  { id: 'swan', name: 'Swan Chain', symbol: 'SWAN', generator: 'evm', params: {}, category: 'EVM Chain', color: '#2DD4BF', parentChain: 'EVM' },
+  { id: 'metal', name: 'Metal L2', symbol: 'MTL', generator: 'evm', params: {}, category: 'EVM Chain', color: '#7C3AED', parentChain: 'EVM' },
+  { id: 'sanko', name: 'Sanko', symbol: 'DMT', generator: 'evm', params: {}, category: 'EVM Chain', color: '#FF5733', parentChain: 'EVM' },
+  { id: 'polynomial', name: 'Polynomial', symbol: 'POLY', generator: 'evm', params: {}, category: 'EVM Chain', color: '#8B5CF6', parentChain: 'EVM' },
+  { id: 'superposition', name: 'Superposition', symbol: 'SUPER2', generator: 'evm', params: {}, category: 'EVM Chain', color: '#F43F5E', parentChain: 'EVM' },
+  { id: 'derive', name: 'Derive', symbol: 'DRV', generator: 'evm', params: {}, category: 'EVM Chain', color: '#06B6D4', parentChain: 'EVM' },
+  { id: 'xlayer', name: 'X Layer', symbol: 'XLAYER', generator: 'evm', params: {}, category: 'EVM Chain', color: '#000000', parentChain: 'EVM' },
+  { id: 'immutable_zk', name: 'Immutable zkEVM', symbol: 'IMXZK', generator: 'evm', params: {}, category: 'EVM Chain', color: '#00C3FF', parentChain: 'EVM' },
+  { id: 'proof_of_play', name: 'Proof of Play', symbol: 'POP', generator: 'evm', params: {}, category: 'EVM Chain', color: '#FF6B00', parentChain: 'EVM' },
+  { id: 'fraxtal2', name: 'Fraxtal', symbol: 'FRAX2', generator: 'evm', params: {}, category: 'EVM Chain', color: '#000000', parentChain: 'EVM' },
+  { id: 'treasure_chain', name: 'Treasure Chain', symbol: 'MAGIC3', generator: 'evm', params: {}, category: 'EVM Chain', color: '#DC2626', parentChain: 'EVM' },
+
+  // ── Cosmos Chains ──
+  { id: 'berachain', name: 'Berachain', symbol: 'BERA', generator: 'cosmos', params: { prefix: 'bera' }, category: 'Cosmos', color: '#7C2D12' },
+  { id: 'zetachain_c', name: 'ZetaChain (Cosmos)', symbol: 'ZETA2', generator: 'cosmos', params: { prefix: 'zeta' }, category: 'Cosmos', color: '#00BC8D' },
+  { id: 'noble', name: 'Noble', symbol: 'USDN', generator: 'cosmos', params: { prefix: 'noble' }, category: 'Cosmos', color: '#F5F5F5' },
+  { id: 'carbon', name: 'Carbon', symbol: 'SWTH', generator: 'cosmos', params: { prefix: 'swth' }, category: 'Cosmos', color: '#05C992' },
+  { id: 'terra2', name: 'Terra 2.0', symbol: 'LUNA', generator: 'cosmos', params: { prefix: 'terra' }, category: 'Cosmos', color: '#172852' },
+  { id: 'terrac', name: 'Terra Classic', symbol: 'LUNC', generator: 'cosmos', params: { prefix: 'terra' }, category: 'Cosmos', color: '#FFD83D' },
+  { id: 'cronos_pos', name: 'Cronos POS', symbol: 'CRO2', generator: 'cosmos', params: { prefix: 'cro' }, category: 'Cosmos', color: '#002D74' },
+  { id: 'sif', name: 'Sifchain', symbol: 'EROWAN', generator: 'cosmos', params: { prefix: 'sif' }, category: 'Cosmos', color: '#C5A86C' },
+  { id: 'chihuahua', name: 'Chihuahua', symbol: 'HUAHUA', generator: 'cosmos', params: { prefix: 'chihuahua' }, category: 'Cosmos', color: '#F5A623' },
+  { id: 'likecoin', name: 'LikeCoin', symbol: 'LIKE', generator: 'cosmos', params: { prefix: 'like' }, category: 'Cosmos', color: '#28646E' },
+
+  // ── Polkadot/Substrate ──
+  { id: 'origintrail', name: 'OriginTrail', symbol: 'TRAC', generator: 'polkadot', params: { networkId: 101 }, category: 'Layer 1', color: '#1B1464' },
+  { id: 'clover', name: 'Clover', symbol: 'CLV', generator: 'polkadot', params: { networkId: 128 }, category: 'Layer 1', color: '#00A86B' },
+  { id: 'darwinia', name: 'Darwinia', symbol: 'RING', generator: 'polkadot', params: { networkId: 18 }, category: 'Layer 1', color: '#FF0083' },
+  { id: 'crust', name: 'Crust', symbol: 'CRU', generator: 'polkadot', params: { networkId: 66 }, category: 'Layer 1', color: '#FA5C4F' },
+  { id: 'ajuna', name: 'Ajuna', symbol: 'AJUN', generator: 'polkadot', params: { networkId: 1328 }, category: 'Layer 1', color: '#F97316' },
+
+  // ── Bitcoin Forks ──
+  { id: 'emc2', name: 'Einsteinium', symbol: 'EMC2', generator: 'btc-legacy', params: { versionByte: 0x21, wifByte: 0xa1 }, category: 'Bitcoin Fork', color: '#423768' },
+  { id: 'xpm', name: 'Primecoin', symbol: 'XPM', generator: 'btc-legacy', params: { versionByte: 0x17, wifByte: 0x97 }, category: 'Bitcoin Fork', color: '#CDC3A7' },
+  { id: 'blk', name: 'BlackCoin', symbol: 'BLK', generator: 'btc-legacy', params: { versionByte: 0x19, wifByte: 0x99 }, category: 'Bitcoin Fork', color: '#333333' },
+  { id: 'game', name: 'GameCredits', symbol: 'GAME', generator: 'btc-legacy', params: { versionByte: 0x26, wifByte: 0xa6 }, category: 'Bitcoin Fork', color: '#2D9CDB' },
+  { id: 'nyc', name: 'NewYorkCoin', symbol: 'NYC', generator: 'btc-legacy', params: { versionByte: 0x3c, wifByte: 0xbc }, category: 'Bitcoin Fork', color: '#4A90D9' },
+  { id: 'rdd', name: 'ReddCoin', symbol: 'RDD', generator: 'btc-legacy', params: { versionByte: 0x3d, wifByte: 0xbd }, category: 'Bitcoin Fork', color: '#E30613' },
+  { id: 'pot', name: 'PotCoin', symbol: 'POT', generator: 'btc-legacy', params: { versionByte: 0x37, wifByte: 0xb7 }, category: 'Bitcoin Fork', color: '#105B2F' },
+  { id: 'xdn', name: 'DigitalNote', symbol: 'XDN', generator: 'btc-legacy', params: { versionByte: 0x5a, wifByte: 0x80 }, category: 'Bitcoin Fork', color: '#4AB5E2' },
+  { id: 'cloak', name: 'CloakCoin', symbol: 'CLOAK', generator: 'btc-legacy', params: { versionByte: 0x1b, wifByte: 0x9b }, category: 'Bitcoin Fork', color: '#FF0000' },
+  { id: 'bitcore', name: 'Bitcore', symbol: 'BTX', generator: 'btc-legacy', params: { versionByte: 0x03, wifByte: 0x80 }, category: 'Bitcoin Fork', color: '#F5A623' },
+
+  // ── Standalone L1s ──
+  { id: 'ckb2', name: 'Nervos CKB', symbol: 'CKB2', generator: 'evm', params: {}, category: 'Layer 1', color: '#3CC68A' },
+  { id: 'qtum', name: 'Qtum', symbol: 'QTUM', generator: 'btc-legacy', params: { versionByte: 0x3a, wifByte: 0x80 }, category: 'Layer 1', color: '#2E9AD0' },
+  { id: 'wan', name: 'Wanchain', symbol: 'WAN', generator: 'evm', params: {}, category: 'Layer 1', color: '#136AAD' },
+  { id: 'btt2', name: 'BitTorrent Chain', symbol: 'BTT2', generator: 'evm', params: {}, category: 'Layer 1', color: '#000000' },
+  { id: 'ela', name: 'Elastos', symbol: 'ELA', generator: 'evm', params: {}, category: 'Layer 1', color: '#3FBADF' },
+  { id: 'rsk', name: 'RSK', symbol: 'RBTC2', generator: 'evm', params: {}, category: 'Layer 1', color: '#00A651' },
+  { id: 'velas', name: 'Velas', symbol: 'VLX', generator: 'evm', params: {}, category: 'Layer 1', color: '#0037C6' },
+  { id: 'syscoin_nevm', name: 'Syscoin NEVM', symbol: 'SYS2', generator: 'evm', params: {}, category: 'Layer 1', color: '#0082C6' },
+  { id: 'conflux', name: 'Conflux', symbol: 'CFX', generator: 'evm', params: {}, category: 'Layer 1', color: '#1C1C1C' },
+  { id: 'songbird', name: 'Songbird', symbol: 'SGB', generator: 'evm', params: {}, category: 'Layer 1', color: '#000063' },
+  { id: 'shimmer', name: 'Shimmer', symbol: 'SMR', generator: 'evm', params: {}, category: 'Layer 1', color: '#25DFCA' },
+  { id: 'aleph', name: 'Aleph Zero', symbol: 'AZERO', generator: 'polkadot', params: { networkId: 42 }, category: 'Layer 1', color: '#00EAC7' },
+  { id: 'concordium', name: 'Concordium', symbol: 'CCD', generator: 'near', params: {}, category: 'Layer 1', color: '#18223A' },
+  { id: 'radix', name: 'Radix', symbol: 'XRD', generator: 'evm', params: {}, category: 'Layer 1', color: '#052CC0' },
+  { id: 'verus', name: 'Verus', symbol: 'VRSC', generator: 'btc-legacy', params: { versionByte: 0x3c, wifByte: 0xbc }, category: 'Layer 1', color: '#3165D4' },
 ];

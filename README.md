@@ -1,8 +1,8 @@
 # Crypto Wallet Generator
 
-Client-side cryptocurrency wallet generator supporting 449 coins across 20+ blockchain families. All keys are generated locally in your browser using cryptographic randomness — nothing is transmitted to any server.
+Client-side cryptocurrency wallet generator supporting 504 coins across 20+ blockchain families. All keys are generated locally in your browser using cryptographic randomness — nothing is transmitted to any server.
 
-## Supported Cryptocurrencies (449 coins)
+## Supported Cryptocurrencies (504 coins)
 
 **Layer 1 Blockchains (31):** ShardCoin, Bitcoin, Ethereum, Solana, XRP, Cardano, Tron, Avalanche, Polkadot, TON, NEAR, Aptos, Sui, Algorand, Tezos, Filecoin, Stellar, Hedera, Monero, EOS, Kusama, ICP, Stacks, MultiversX, Flow, Mina, Neo, Waves, Zilliqa, IOTA, Kaspa
 
@@ -33,7 +33,7 @@ Client-side cryptocurrency wallet generator supporting 449 coins across 20+ bloc
 - "Generate All" to create wallets for all visible coins at once
 - Fully client-side — works offline after loading
 - **Keys are never stored, transmitted, or logged** — they exist only in browser memory
-- **Print Wallet** — paper wallet view with QR codes, opens print dialog
+- **Print Wallet** — paper wallet with QR codes via native system print dialog
 - Responsive dark theme with animated transitions
 
 ## Address Generation Methods
