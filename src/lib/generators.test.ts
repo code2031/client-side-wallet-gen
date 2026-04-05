@@ -21,6 +21,25 @@ function isBech32(s: string, prefix: string): boolean {
   return s.startsWith(prefix + '1') && s.length > prefix.length + 6;
 }
 
+// ── Seed phrase tests ──
+
+describe('seed phrase', () => {
+  it('every wallet includes a 12-word BIP-39 seed phrase', () => {
+    const w = generateWallet('evm', {});
+    const words = w.seedPhrase.split(' ');
+    expect(words.length).toBe(12);
+    words.forEach(word => {
+      expect(word).toMatch(/^[a-z]+$/);
+    });
+  });
+
+  it('seed phrases differ between wallets', () => {
+    const a = generateWallet('evm', {});
+    const b = generateWallet('evm', {});
+    expect(a.seedPhrase).not.toBe(b.seedPhrase);
+  });
+});
+
 // ── Generator format tests ──
 
 describe('generators', () => {

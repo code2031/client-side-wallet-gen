@@ -107,9 +107,15 @@ button:focus-visible {
     color: #111 !important;
   }
 
-  /* Hide everything except the print overlay */
-  body > * {
-    display: none !important;
+  /* Hide everything via visibility (keeps layout so fixed positioning works) */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Show only the print overlay and its children */
+  .print-overlay,
+  .print-overlay * {
+    visibility: visible !important;
   }
 
   .print-overlay {

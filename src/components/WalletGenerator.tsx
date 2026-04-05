@@ -482,6 +482,21 @@ export default function WalletGenerator() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+            <div style={{ flex: 1, height: 1, background: '#e0e0e0' }} />
+            <span style={{ fontSize: 10, color: '#888', textTransform: 'uppercase' as const, letterSpacing: 2, fontWeight: 600 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: '#e0e0e0' }} />
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: 1.5, color: '#888', fontWeight: 600, marginBottom: 8 }}>
+              Seed Phrase (12 words)
+            </div>
+            <div style={{ fontFamily: 'monospace', fontSize: 13, wordBreak: 'break-all' as const, background: '#f5f5f5', border: '1px solid #e0e0e0', borderRadius: 6, padding: 12, lineHeight: 2 }}>
+              {printData.wallet.seedPhrase}
+            </div>
+          </div>
+
           {printData.wallet.note && (
             <div style={{ background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 6, padding: 10, fontSize: 11, color: '#92400e', marginBottom: 20 }}>
               {printData.wallet.note}
@@ -489,7 +504,7 @@ export default function WalletGenerator() {
           )}
 
           <div style={{ marginTop: 32, padding: 12, border: '2px solid #dc2626', borderRadius: 8, color: '#dc2626', fontSize: 11, fontWeight: 600, textAlign: 'center' as const }}>
-            KEEP THIS SAFE &mdash; Never share your private key with anyone.
+            KEEP THIS SAFE &mdash; Never share your private key or seed phrase with anyone.
           </div>
           <div style={{ marginTop: 16, fontSize: 10, color: '#aaa', textAlign: 'center' as const }}>
             Generated client-side &mdash; no keys were transmitted or stored.
@@ -628,6 +643,50 @@ function CoinCard({
                 className="w-full bg-white/[0.02] border border-white/[0.04] rounded-lg p-2.5 text-zinc-700 text-[10px] text-left hover:bg-white/[0.04] transition-colors cursor-pointer"
               >
                 Click to reveal private key...
+              </button>
+            )}
+          </div>
+
+          {/* Or divider */}
+          <div className="flex items-center gap-3 py-0.5">
+            <div className="flex-1 h-px bg-white/[0.06]" />
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest font-semibold">or</span>
+            <div className="flex-1 h-px bg-white/[0.06]" />
+          </div>
+
+          {/* Seed Phrase */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">
+                Seed Phrase
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onToggleReveal}
+                  className="p-1 text-zinc-600 hover:text-zinc-300 transition-colors rounded"
+                  title={isRevealed ? 'Hide' : 'Reveal'}
+                >
+                  {isRevealed ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+                <button
+                  onClick={() => onCopy(wallet.seedPhrase, coin.id + '-seed')}
+                  className="p-1 text-zinc-600 hover:text-zinc-300 transition-colors rounded"
+                  title="Copy"
+                >
+                  {copiedId === coin.id + '-seed' ? <CheckIcon /> : <CopyIcon />}
+                </button>
+              </div>
+            </div>
+            {isRevealed ? (
+              <code className="text-[10px] text-orange-400/80 break-all block bg-orange-500/[0.04] border border-orange-500/[0.08] rounded-lg p-2.5 leading-relaxed font-mono">
+                {wallet.seedPhrase}
+              </code>
+            ) : (
+              <button
+                onClick={onToggleReveal}
+                className="w-full bg-white/[0.02] border border-white/[0.04] rounded-lg p-2.5 text-zinc-700 text-[10px] text-left hover:bg-white/[0.04] transition-colors cursor-pointer"
+              >
+                Click to reveal seed phrase...
               </button>
             )}
           </div>

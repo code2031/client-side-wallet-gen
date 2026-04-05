@@ -1,6 +1,7 @@
 export interface WalletResult {
   address: string;
   privateKey: string;
+  seedPhrase: string;
   note?: string;
 }
 

@@ -14,12 +14,20 @@ import {
   bech32,
   base32,
 } from '@scure/base';
+import { generateMnemonic } from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english.js';
 import type { WalletResult, GeneratorType } from './types';
+
+type RawWallet = Omit<WalletResult, 'seedPhrase'>;
 
 const b58check = base58checkCreate(sha256);
 
 function randomBytes(n: number): Uint8Array {
   return crypto.getRandomValues(new Uint8Array(n));
+}
+
+function genSeedPhrase(): string {
+  return generateMnemonic(wordlist, 128);
 }
 
 function bytesToNumberLE(bytes: Uint8Array): bigint {
@@ -57,7 +65,7 @@ function crc16xmodem(data: Uint8Array): number {
 
 // ── EVM (Ethereum, BNB, Polygon, Arbitrum, etc.) ──
 
-function generateEVM(): WalletResult {
+function generateEVM(): RawWallet {
   const privKey = randomBytes(32);
   const pubKey = secp256k1.getPublicKey(privKey, false);
   const hash = keccak_256(pubKey.slice(1));
@@ -77,7 +85,7 @@ function generateEVM(): WalletResult {
 
 // ── Bitcoin Legacy P2PKH ──
 
-function generateBtcLegacy(params: Record<string, unknown>): WalletResult {
+function generateBtcLegacy(params: Record<string, unknown>): RawWallet {
   const versionByte = params.versionByte as number | number[];
   const wifByte = params.wifByte as number;
 
@@ -102,7 +110,7 @@ function generateBtcLegacy(params: Record<string, unknown>): WalletResult {
 
 // ── Bitcoin SegWit P2WPKH ──
 
-function generateBtcSegwit(params: Record<string, unknown>): WalletResult {
+function generateBtcSegwit(params: Record<string, unknown>): RawWallet {
   const hrp = params.hrp as string;
 
   const privKey = randomBytes(32);
@@ -124,7 +132,7 @@ function generateBtcSegwit(params: Record<string, unknown>): WalletResult {
 
 // ── Solana ──
 
-function generateSolana(): WalletResult {
+function generateSolana(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -136,7 +144,7 @@ function generateSolana(): WalletResult {
 
 // ── XRP ──
 
-function generateXRP(): WalletResult {
+function generateXRP(): RawWallet {
   const privKey = randomBytes(32);
   const pubKey = secp256k1.getPublicKey(privKey, true);
 
@@ -150,7 +158,7 @@ function generateXRP(): WalletResult {
 
 // ── Tron ──
 
-function generateTron(): WalletResult {
+function generateTron(): RawWallet {
   const privKey = randomBytes(32);
   const pubKey = secp256k1.getPublicKey(privKey, false);
   const hash = keccak_256(pubKey.slice(1));
@@ -164,7 +172,7 @@ function generateTron(): WalletResult {
 
 // ── Cosmos (ATOM, OSMO, INJ, SEI, TIA, etc.) ──
 
-function generateCosmos(params: Record<string, unknown>): WalletResult {
+function generateCosmos(params: Record<string, unknown>): RawWallet {
   const prefix = params.prefix as string;
 
   const privKey = randomBytes(32);
@@ -179,7 +187,7 @@ function generateCosmos(params: Record<string, unknown>): WalletResult {
 
 // ── Cardano (enterprise address) ──
 
-function generateCardano(): WalletResult {
+function generateCardano(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -198,7 +206,7 @@ function generateCardano(): WalletResult {
 
 // ── Polkadot / Kusama (SS58) ──
 
-function generatePolkadot(params: Record<string, unknown>): WalletResult {
+function generatePolkadot(params: Record<string, unknown>): RawWallet {
   const networkId = params.networkId as number;
 
   const seed = randomBytes(32);
@@ -225,7 +233,7 @@ function generatePolkadot(params: Record<string, unknown>): WalletResult {
 
 // ── Stellar ──
 
-function generateStellar(): WalletResult {
+function generateStellar(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -246,7 +254,7 @@ function generateStellar(): WalletResult {
 
 // ── NEAR ──
 
-function generateNear(): WalletResult {
+function generateNear(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -258,7 +266,7 @@ function generateNear(): WalletResult {
 
 // ── Aptos ──
 
-function generateAptos(): WalletResult {
+function generateAptos(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -271,7 +279,7 @@ function generateAptos(): WalletResult {
 
 // ── Sui ──
 
-function generateSui(): WalletResult {
+function generateSui(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -284,7 +292,7 @@ function generateSui(): WalletResult {
 
 // ── Algorand ──
 
-function generateAlgorand(): WalletResult {
+function generateAlgorand(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -297,7 +305,7 @@ function generateAlgorand(): WalletResult {
 
 // ── Tezos ──
 
-function generateTezos(): WalletResult {
+function generateTezos(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -313,7 +321,7 @@ function generateTezos(): WalletResult {
 
 // ── Monero ──
 
-function generateMonero(): WalletResult {
+function generateMonero(): RawWallet {
   const L = ed25519.CURVE.n;
   const G = ed25519.ExtendedPoint.BASE;
 
@@ -344,7 +352,7 @@ function generateMonero(): WalletResult {
 
 // ── Filecoin (f1 secp256k1) ──
 
-function generateFilecoin(): WalletResult {
+function generateFilecoin(): RawWallet {
   const privKey = randomBytes(32);
   const pubKey = secp256k1.getPublicKey(privKey, false);
 
@@ -359,7 +367,7 @@ function generateFilecoin(): WalletResult {
 
 // ── TON (key pair only) ──
 
-function generateTON(): WalletResult {
+function generateTON(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -372,7 +380,7 @@ function generateTON(): WalletResult {
 
 // ── Hedera (key pair only) ──
 
-function generateHedera(): WalletResult {
+function generateHedera(): RawWallet {
   const seed = randomBytes(32);
   const pubKey = ed25519.getPublicKey(seed);
 
@@ -385,7 +393,7 @@ function generateHedera(): WalletResult {
 
 // ── EOS (key pair) ──
 
-function generateEOS(): WalletResult {
+function generateEOS(): RawWallet {
   const privKey = randomBytes(32);
   const pubKey = secp256k1.getPublicKey(privKey, true);
 
@@ -405,52 +413,39 @@ function generateEOS(): WalletResult {
 
 // ── Main dispatcher ──
 
+function generateRaw(
+  generator: GeneratorType,
+  params: Record<string, unknown>,
+): Omit<WalletResult, 'seedPhrase'> {
+  switch (generator) {
+    case 'evm': return generateEVM();
+    case 'btc-legacy': return generateBtcLegacy(params);
+    case 'btc-segwit': return generateBtcSegwit(params);
+    case 'solana': return generateSolana();
+    case 'xrp': return generateXRP();
+    case 'tron': return generateTron();
+    case 'cosmos': return generateCosmos(params);
+    case 'cardano': return generateCardano();
+    case 'polkadot': return generatePolkadot(params);
+    case 'stellar': return generateStellar();
+    case 'near': return generateNear();
+    case 'aptos': return generateAptos();
+    case 'sui': return generateSui();
+    case 'algorand': return generateAlgorand();
+    case 'tezos': return generateTezos();
+    case 'ton': return generateTON();
+    case 'monero': return generateMonero();
+    case 'filecoin': return generateFilecoin();
+    case 'hedera': return generateHedera();
+    case 'eos': return generateEOS();
+    default: throw new Error(`Unknown generator: ${generator}`);
+  }
+}
+
 export function generateWallet(
   generator: GeneratorType,
   params: Record<string, unknown>,
 ): WalletResult {
-  switch (generator) {
-    case 'evm':
-      return generateEVM();
-    case 'btc-legacy':
-      return generateBtcLegacy(params);
-    case 'btc-segwit':
-      return generateBtcSegwit(params);
-    case 'solana':
-      return generateSolana();
-    case 'xrp':
-      return generateXRP();
-    case 'tron':
-      return generateTron();
-    case 'cosmos':
-      return generateCosmos(params);
-    case 'cardano':
-      return generateCardano();
-    case 'polkadot':
-      return generatePolkadot(params);
-    case 'stellar':
-      return generateStellar();
-    case 'near':
-      return generateNear();
-    case 'aptos':
-      return generateAptos();
-    case 'sui':
-      return generateSui();
-    case 'algorand':
-      return generateAlgorand();
-    case 'tezos':
-      return generateTezos();
-    case 'ton':
-      return generateTON();
-    case 'monero':
-      return generateMonero();
-    case 'filecoin':
-      return generateFilecoin();
-    case 'hedera':
-      return generateHedera();
-    case 'eos':
-      return generateEOS();
-    default:
-      throw new Error(`Unknown generator: ${generator}`);
-  }
+  const raw = generateRaw(generator, params);
+  return { ...raw, seedPhrase: genSeedPhrase() };
 }
