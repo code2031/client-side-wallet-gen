@@ -14,7 +14,7 @@ No test runner or linter is configured. TypeScript checking happens during `npm 
 
 ## Architecture
 
-Client-side cryptocurrency wallet generator for 970 coins. **Zero server-side logic** — Next.js is configured with `output: 'export'` for static HTML/JS only. All crypto runs in the browser via `crypto.getRandomValues()`.
+Client-side cryptocurrency wallet generator for 1000 coins. **Zero server-side logic** — Next.js is configured with `output: 'export'` for static HTML/JS only. All crypto runs in the browser via `crypto.getRandomValues()`.
 
 ### Three-layer design
 
