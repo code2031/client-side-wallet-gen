@@ -2,9 +2,15 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { generateWallet } from '@/lib/generators';
+import { generateWallet, generateWalletFromEntropy, b58check } from '@/lib/generators';
 import { coins } from '@/lib/coins';
+import { splitSecret, combineShares, shareToHex, hexToShare } from '@/lib/shamir';
+import { sha256 } from '@noble/hashes/sha256';
+import { bytesToHex } from '@noble/hashes/utils';
 import type { WalletResult, CoinDefinition } from '@/lib/types';
+
+const MODES = ['Single', 'Paper', 'Bulk', 'Brain', 'Vanity', 'Split', 'Details'] as const;
+type Mode = typeof MODES[number];
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Layer 1': '#3b82f6',
@@ -118,6 +124,7 @@ function XIcon() {
 
 export default function WalletGenerator() {
   const [search, setSearch] = useState('');
+  const [mode, setMode] = useState<Mode>('Single');
   const [category, setCategory] = useState('All');
   const [wallets, setWallets] = useState<Record<string, WalletResult>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
@@ -249,6 +256,25 @@ export default function WalletGenerator() {
         </div>
       </header>
 
+      {/* ── Mode Tabs ── */}
+      <div className="border-b border-white/[0.06] bg-[#050508]">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto py-2">
+          {MODES.map(m => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                mode === m
+                  ? 'bg-white text-zinc-900 shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]'
+              }`}
+            >
+              {m === 'Single' ? 'Single Wallet' : m === 'Details' ? 'Wallet Details' : `${m} Wallet`}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ── Security Notice ── */}
       <div className="bg-amber-500/[0.04] border-b border-amber-500/[0.08]">
         <p className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-2 text-amber-300/70 text-[11px] sm:text-xs">
@@ -257,6 +283,17 @@ export default function WalletGenerator() {
         </p>
       </div>
 
+      {mode !== 'Single' && (
+        <ModePanel
+          mode={mode}
+          coins={coins}
+          copy={copy}
+          copiedId={copied}
+          showToast={showToast}
+        />
+      )}
+
+      {mode === 'Single' && <>
       {/* ── Toolbar ── */}
       <div className="sticky top-0 z-30 bg-[#050508]/95 backdrop-blur-md border-b border-white/[0.06]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-2.5">
@@ -356,6 +393,7 @@ export default function WalletGenerator() {
           </div>
         )}
       </div>
+      </>}
 
       {/* ── Footer ── */}
       <footer className="border-t border-white/[0.04] bg-white/[0.01]">
@@ -775,6 +813,400 @@ function WalletField({
       <code className={`text-[10px] ${accentColors.text} break-all block ${accentColors.bg} border ${accentColors.border} rounded-lg p-2.5 leading-relaxed font-mono`}>
         {value}
       </code>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Mode Panels (Paper, Bulk, Brain, Vanity, Split, Details)
+// ══════════════════════════════════════════════════════════════════
+
+const inputCls = 'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/40 transition-all';
+const btnCls = 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/20';
+const labelCls = 'text-[10px] text-zinc-500 uppercase tracking-widest font-semibold mb-1.5 block';
+const resultBoxCls = 'text-[11px] break-all bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 leading-relaxed font-mono';
+
+function CoinDropdown({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  return (
+    <select value={value} onChange={e => onChange(e.target.value)} className={inputCls + ' cursor-pointer'}>
+      {coins.map(c => <option key={c.id} value={c.id} className="bg-zinc-900">{c.name} ({c.symbol})</option>)}
+    </select>
+  );
+}
+
+function ModePanel({ mode, coins: _coins, copy, copiedId, showToast }: {
+  mode: Mode;
+  coins: CoinDefinition[];
+  copy: (text: string, id: string) => void;
+  copiedId: string | null;
+  showToast: (msg: string) => void;
+}) {
+  switch (mode) {
+    case 'Paper': return <PaperMode copy={copy} copiedId={copiedId} showToast={showToast} />;
+    case 'Bulk': return <BulkMode showToast={showToast} />;
+    case 'Brain': return <BrainMode copy={copy} copiedId={copiedId} />;
+    case 'Vanity': return <VanityMode copy={copy} copiedId={copiedId} showToast={showToast} />;
+    case 'Split': return <SplitMode copy={copy} copiedId={copiedId} showToast={showToast} />;
+    case 'Details': return <DetailsMode copy={copy} copiedId={copiedId} />;
+    default: return null;
+  }
+}
+
+// ── Paper Wallet ──
+
+function PaperMode({ copy, copiedId, showToast }: { copy: (t: string, id: string) => void; copiedId: string | null; showToast: (m: string) => void }) {
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [count, setCount] = useState(3);
+  const [results, setResults] = useState<WalletResult[]>([]);
+
+  const generate = () => {
+    const coin = coins.find(c => c.id === coinId)!;
+    const ws = Array.from({ length: count }, () => generateWallet(coin.generator, coin.params));
+    setResults(ws);
+    showToast(`Generated ${count} wallets`);
+  };
+
+  const coin = coins.find(c => c.id === coinId)!;
+
+  return (
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Paper Wallet</h2>
+      <p className="text-zinc-500 text-sm">Generate multiple wallets formatted for printing.</p>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1"><label className={labelCls}>Coin</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+        <div className="w-32"><label className={labelCls}>Count</label><input type="number" min={1} max={20} value={count} onChange={e => setCount(Math.min(20, Math.max(1, +e.target.value)))} className={inputCls} /></div>
+        <div className="flex items-end gap-2">
+          <button onClick={generate} className={btnCls}>Generate</button>
+          {results.length > 0 && <button onClick={() => window.print()} className={btnCls.replace('blue-600', 'zinc-700').replace('blue-500', 'zinc-600').replace('blue-700', 'zinc-800').replace('blue-500/20', 'transparent')}>Print</button>}
+        </div>
+      </div>
+      {results.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {results.map((w, i) => (
+              <div key={i} className="card-base space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold text-white">{coin.name} #{i + 1}</span>
+                  <span className="text-[9px] text-zinc-600">{coin.symbol}</span>
+                </div>
+                <div><span className={labelCls}>Address</span><code className={resultBoxCls + ' text-emerald-400/80'}>{w.address}</code></div>
+                <div><span className={labelCls}>Private Key</span><code className={resultBoxCls + ' text-red-400/80'}>{w.privateKey}</code></div>
+                <div><span className={labelCls}>Seed Phrase</span><code className={resultBoxCls + ' text-orange-400/80'}>{w.seedPhrase}</code></div>
+              </div>
+            ))}
+          </div>
+          {/* Print-only version */}
+          <div className="print-overlay">
+            <h1 style={{ fontSize: 20, marginBottom: 20 }}>{coin.name} Paper Wallets</h1>
+            {results.map((w, i) => (
+              <div key={i} style={{ marginBottom: 28, pageBreakInside: 'avoid' as const, borderBottom: '1px solid #ddd', paddingBottom: 20 }}>
+                <h3 style={{ fontSize: 14, marginBottom: 8 }}>Wallet #{i + 1}</h3>
+                <div style={{ marginBottom: 8 }}><strong style={{ fontSize: 10, color: '#888' }}>ADDRESS</strong><div style={{ fontFamily: 'monospace', fontSize: 10, wordBreak: 'break-all' as const, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>{w.address}</div></div>
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 8 }}><QRCodeSVG value={w.address} size={100} level="M" /></div>
+                <div style={{ marginBottom: 8 }}><strong style={{ fontSize: 10, color: '#888' }}>PRIVATE KEY</strong><div style={{ fontFamily: 'monospace', fontSize: 10, wordBreak: 'break-all' as const, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>{w.privateKey}</div></div>
+                <div><strong style={{ fontSize: 10, color: '#888' }}>SEED PHRASE</strong><div style={{ fontFamily: 'monospace', fontSize: 11, background: '#f5f5f5', padding: 8, borderRadius: 4 }}>{w.seedPhrase}</div></div>
+              </div>
+            ))}
+            <div style={{ textAlign: 'center' as const, color: '#dc2626', fontWeight: 600, fontSize: 11, border: '2px solid #dc2626', padding: 10, borderRadius: 8 }}>KEEP THESE SAFE — Never share private keys or seed phrases.</div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Bulk Wallet ──
+
+function BulkMode({ showToast }: { showToast: (m: string) => void }) {
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [count, setCount] = useState(10);
+  const [csv, setCsv] = useState('');
+
+  const generate = () => {
+    const coin = coins.find(c => c.id === coinId)!;
+    const rows = ['Index,Address,Private Key,Seed Phrase'];
+    for (let i = 0; i < count; i++) {
+      const w = generateWallet(coin.generator, coin.params);
+      rows.push(`${i + 1},"${w.address}","${w.privateKey}","${w.seedPhrase}"`);
+    }
+    setCsv(rows.join('\n'));
+    showToast(`Generated ${count} wallets`);
+  };
+
+  const download = () => {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wallets-${coinId}-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Bulk Wallet</h2>
+      <p className="text-zinc-500 text-sm">Generate many wallets at once in CSV format.</p>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1"><label className={labelCls}>Coin</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+        <div className="w-32"><label className={labelCls}>Count</label><input type="number" min={1} max={1000} value={count} onChange={e => setCount(Math.min(1000, Math.max(1, +e.target.value)))} className={inputCls} /></div>
+        <div className="flex items-end"><button onClick={generate} className={btnCls}>Generate</button></div>
+      </div>
+      {csv && (
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <button onClick={() => { navigator.clipboard.writeText(csv); showToast('CSV copied'); }} className="text-xs text-zinc-400 hover:text-white transition-colors">Copy CSV</button>
+            <button onClick={download} className="text-xs text-zinc-400 hover:text-white transition-colors">Download CSV</button>
+          </div>
+          <textarea readOnly value={csv} rows={12} className={inputCls + ' font-mono text-[10px] text-zinc-400 resize-y'} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Brain Wallet ──
+
+function BrainMode({ copy, copiedId }: { copy: (t: string, id: string) => void; copiedId: string | null }) {
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [passphrase, setPassphrase] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [result, setResult] = useState<WalletResult | null>(null);
+  const [showPass, setShowPass] = useState(false);
+
+  const generate = () => {
+    if (passphrase.length < 12) return;
+    if (passphrase !== confirm) return;
+    const coin = coins.find(c => c.id === coinId)!;
+    const entropy = sha256(new TextEncoder().encode(passphrase));
+    setResult(generateWalletFromEntropy(coin.generator, coin.params, entropy));
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Brain Wallet</h2>
+      <div className="bg-red-500/[0.06] border border-red-500/[0.12] rounded-lg p-3">
+        <p className="text-red-400/80 text-xs">Brain wallets are vulnerable to brute-force attacks. Use a very strong, unique passphrase (12+ characters). Never use common phrases.</p>
+      </div>
+      <div><label className={labelCls}>Coin</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+      <div><label className={labelCls}>Passphrase (min 12 chars)</label><input type={showPass ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder="Enter a strong passphrase..." className={inputCls} /></div>
+      <div><label className={labelCls}>Confirm Passphrase</label><input type={showPass ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter passphrase..." className={inputCls} /></div>
+      <div className="flex items-center gap-3">
+        <button onClick={generate} className={btnCls} disabled={passphrase.length < 12 || passphrase !== confirm}>Generate</button>
+        <label className="text-xs text-zinc-500 flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showPass} onChange={e => setShowPass(e.target.checked)} className="accent-blue-600" /> Show</label>
+        {passphrase.length > 0 && passphrase.length < 12 && <span className="text-[10px] text-red-400">{12 - passphrase.length} more chars needed</span>}
+        {passphrase.length >= 12 && confirm.length > 0 && passphrase !== confirm && <span className="text-[10px] text-red-400">Passphrases don&apos;t match</span>}
+      </div>
+      {result && (
+        <div className="card-base space-y-3 mt-4">
+          <div><span className={labelCls}>Address</span><code className={resultBoxCls + ' text-emerald-400/80'}>{result.address}</code></div>
+          <div><span className={labelCls}>Private Key</span><code className={resultBoxCls + ' text-red-400/80'}>{result.privateKey}</code></div>
+          <div><span className={labelCls}>Seed Phrase</span><code className={resultBoxCls + ' text-orange-400/80'}>{result.seedPhrase}</code></div>
+          <p className="text-[10px] text-zinc-600">Deterministic: same passphrase + coin always produces the same address.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Vanity Wallet ──
+
+function VanityMode({ copy, copiedId, showToast }: { copy: (t: string, id: string) => void; copiedId: string | null; showToast: (m: string) => void }) {
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [prefix, setPrefix] = useState('');
+  const [running, setRunning] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [result, setResult] = useState<WalletResult | null>(null);
+  const cancelRef = useRef(false);
+
+  const search = () => {
+    if (!prefix) return;
+    setRunning(true);
+    setResult(null);
+    setAttempts(0);
+    cancelRef.current = false;
+    const coin = coins.find(c => c.id === coinId)!;
+    const target = prefix.toLowerCase();
+    let count = 0;
+
+    function batch() {
+      if (cancelRef.current) { setRunning(false); return; }
+      for (let i = 0; i < 200; i++) {
+        const w = generateWallet(coin.generator, coin.params);
+        count++;
+        if (w.address.toLowerCase().includes(target)) {
+          setResult(w);
+          setAttempts(count);
+          setRunning(false);
+          showToast(`Found after ${count.toLocaleString()} attempts`);
+          return;
+        }
+      }
+      setAttempts(count);
+      setTimeout(batch, 0);
+    }
+    batch();
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Vanity Wallet</h2>
+      <p className="text-zinc-500 text-sm">Search for an address containing a specific pattern. Longer patterns take exponentially longer.</p>
+      <div><label className={labelCls}>Coin</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+      <div><label className={labelCls}>Address must contain</label><input value={prefix} onChange={e => setPrefix(e.target.value)} placeholder="e.g. cafe, dead, 1337" className={inputCls} maxLength={6} /></div>
+      <div className="flex items-center gap-3">
+        {!running ? (
+          <button onClick={search} className={btnCls} disabled={!prefix}>Search</button>
+        ) : (
+          <button onClick={() => { cancelRef.current = true; }} className={btnCls.replace('blue', 'red')}>Stop</button>
+        )}
+        {(running || attempts > 0) && <span className="text-xs text-zinc-500">{attempts.toLocaleString()} attempts{running && '...'}</span>}
+      </div>
+      {result && (
+        <div className="card-base space-y-3">
+          <div><span className={labelCls}>Address</span><code className={resultBoxCls + ' text-emerald-400/80'}>{result.address}</code></div>
+          <div><span className={labelCls}>Private Key</span><code className={resultBoxCls + ' text-red-400/80'}>{result.privateKey}</code></div>
+          <div><span className={labelCls}>Seed Phrase</span><code className={resultBoxCls + ' text-orange-400/80'}>{result.seedPhrase}</code></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Split Wallet (Shamir's Secret Sharing) ──
+
+function SplitMode({ copy, copiedId, showToast }: { copy: (t: string, id: string) => void; copiedId: string | null; showToast: (m: string) => void }) {
+  const [tab, setTab] = useState<'split' | 'combine'>('split');
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [numShares, setNumShares] = useState(3);
+  const [threshold, setThreshold] = useState(2);
+  const [wallet, setWallet] = useState<WalletResult | null>(null);
+  const [shares, setShares] = useState<string[]>([]);
+  const [shareInput, setShareInput] = useState('');
+  const [recovered, setRecovered] = useState<WalletResult | null>(null);
+
+  const doSplit = () => {
+    const coin = coins.find(c => c.id === coinId)!;
+    const w = generateWallet(coin.generator, coin.params);
+    setWallet(w);
+    let keyHex = w.privateKey;
+    if (keyHex.startsWith('0x')) keyHex = keyHex.slice(2);
+    if (!/^[0-9a-fA-F]+$/.test(keyHex)) {
+      keyHex = bytesToHex(sha256(new TextEncoder().encode(w.privateKey)));
+    }
+    const secret = new Uint8Array(keyHex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+    const parts = splitSecret(secret, numShares, threshold);
+    setShares(parts.map(shareToHex));
+  };
+
+  const doCombine = () => {
+    const lines = shareInput.trim().split('\n').filter(Boolean);
+    if (lines.length < 2) return;
+    const parts = lines.map(hexToShare);
+    const secret = combineShares(parts);
+    const coin = coins.find(c => c.id === coinId)!;
+    setRecovered(generateWalletFromEntropy(coin.generator, coin.params, secret));
+    showToast('Secret reconstructed');
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Split Wallet</h2>
+      <p className="text-zinc-500 text-sm">Split a private key into N shares requiring M to reconstruct (Shamir&apos;s Secret Sharing).</p>
+      <div className="flex gap-2">
+        <button onClick={() => setTab('split')} className={`px-4 py-1.5 rounded-lg text-xs font-medium ${tab === 'split' ? 'bg-white text-zinc-900' : 'text-zinc-500 hover:text-white bg-white/[0.04]'}`}>Split</button>
+        <button onClick={() => setTab('combine')} className={`px-4 py-1.5 rounded-lg text-xs font-medium ${tab === 'combine' ? 'bg-white text-zinc-900' : 'text-zinc-500 hover:text-white bg-white/[0.04]'}`}>Combine</button>
+      </div>
+      <div><label className={labelCls}>Coin</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+
+      {tab === 'split' && (
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            <div className="w-32"><label className={labelCls}>Shares (N)</label><input type="number" min={2} max={255} value={numShares} onChange={e => setNumShares(Math.max(2, +e.target.value))} className={inputCls} /></div>
+            <div className="w-32"><label className={labelCls}>Threshold (M)</label><input type="number" min={2} max={numShares} value={threshold} onChange={e => setThreshold(Math.min(numShares, Math.max(2, +e.target.value)))} className={inputCls} /></div>
+          </div>
+          <button onClick={doSplit} className={btnCls}>Generate &amp; Split</button>
+          {wallet && shares.length > 0 && (
+            <div className="space-y-3">
+              <div className="card-base"><span className={labelCls}>Address</span><code className={resultBoxCls + ' text-emerald-400/80'}>{wallet.address}</code></div>
+              <p className="text-xs text-zinc-500">Any {threshold} of these {numShares} shares can reconstruct the key:</p>
+              {shares.map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-[10px] text-zinc-600 w-14 shrink-0">Share {i + 1}</span>
+                  <code className="text-[10px] text-cyan-400/80 break-all bg-white/[0.03] border border-white/[0.06] rounded p-2 flex-1 font-mono">{s}</code>
+                  <button onClick={() => copy(s, 'share-' + i)} className="text-[10px] text-zinc-600 hover:text-white shrink-0">{copiedId === 'share-' + i ? 'Copied' : 'Copy'}</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === 'combine' && (
+        <div className="space-y-4">
+          <div><label className={labelCls}>Shares (one hex per line)</label><textarea value={shareInput} onChange={e => setShareInput(e.target.value)} rows={5} placeholder="Paste shares here, one per line..." className={inputCls + ' font-mono text-[11px] resize-y'} /></div>
+          <button onClick={doCombine} className={btnCls}>Reconstruct</button>
+          {recovered && (
+            <div className="card-base space-y-3">
+              <div><span className={labelCls}>Recovered Address</span><code className={resultBoxCls + ' text-emerald-400/80'}>{recovered.address}</code></div>
+              <div><span className={labelCls}>Recovered Key</span><code className={resultBoxCls + ' text-red-400/80'}>{recovered.privateKey}</code></div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Wallet Details ──
+
+function DetailsMode({ copy, copiedId }: { copy: (t: string, id: string) => void; copiedId: string | null }) {
+  const [coinId, setCoinId] = useState(coins[0].id);
+  const [keyInput, setKeyInput] = useState('');
+  const [result, setResult] = useState<WalletResult | null>(null);
+  const [error, setError] = useState('');
+
+  const inspect = () => {
+    setError('');
+    setResult(null);
+    const coin = coins.find(c => c.id === coinId)!;
+    try {
+      let hex = keyInput.trim();
+      if (hex.startsWith('0x')) hex = hex.slice(2);
+      let raw: Uint8Array;
+      if (/^[0-9a-fA-F]{64}$/.test(hex)) {
+        raw = new Uint8Array(hex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+      } else if (/^[5KLcQ][1-9A-HJ-NP-Za-km-z]{50,51}$/.test(keyInput.trim())) {
+        const decoded = b58check.decode(keyInput.trim());
+        raw = decoded.length === 34 ? decoded.slice(1, 33) : decoded.slice(1);
+      } else {
+        setError('Enter a 64-char hex key (with or without 0x) or a WIF private key.');
+        return;
+      }
+      setResult(generateWalletFromEntropy(coin.generator, coin.params, raw));
+    } catch (e) {
+      setError('Invalid key: ' + (e as Error).message);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-white">Wallet Details</h2>
+      <p className="text-zinc-500 text-sm">Enter a private key to view the corresponding address and key formats.</p>
+      <div><label className={labelCls}>Coin Type</label><CoinDropdown value={coinId} onChange={setCoinId} /></div>
+      <div><label className={labelCls}>Private Key (hex or WIF)</label><input value={keyInput} onChange={e => setKeyInput(e.target.value)} placeholder="0x... or WIF..." className={inputCls + ' font-mono'} /></div>
+      <button onClick={inspect} className={btnCls} disabled={!keyInput.trim()}>View Details</button>
+      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {result && (
+        <div className="card-base space-y-3">
+          <div className="flex items-center gap-2"><span className={labelCls + ' mb-0 flex-shrink-0'}>Address</span><code className={resultBoxCls + ' text-emerald-400/80 flex-1'}>{result.address}</code>
+            <button onClick={() => copy(result.address, 'det-a')} className="text-[10px] text-zinc-600 hover:text-white">{copiedId === 'det-a' ? 'Copied' : 'Copy'}</button></div>
+          <div className="flex items-center gap-2"><span className={labelCls + ' mb-0 flex-shrink-0'}>Private Key</span><code className={resultBoxCls + ' text-red-400/80 flex-1'}>{result.privateKey}</code>
+            <button onClick={() => copy(result.privateKey, 'det-k')} className="text-[10px] text-zinc-600 hover:text-white">{copiedId === 'det-k' ? 'Copied' : 'Copy'}</button></div>
+          <div><span className={labelCls}>Seed Phrase</span><code className={resultBoxCls + ' text-orange-400/80'}>{result.seedPhrase}</code></div>
+          {result.note && <p className="text-[10px] text-amber-400/70">{result.note}</p>}
+        </div>
+      )}
     </div>
   );
 }

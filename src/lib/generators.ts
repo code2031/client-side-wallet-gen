@@ -22,9 +22,27 @@ type RawWallet = Omit<WalletResult, 'seedPhrase'>;
 
 const b58check = base58checkCreate(sha256);
 
+let _entropyOverride: Uint8Array | null = null;
+
 function randomBytes(n: number): Uint8Array {
+  if (_entropyOverride) {
+    const e = _entropyOverride.slice(0, n);
+    _entropyOverride = null;
+    return e;
+  }
   return crypto.getRandomValues(new Uint8Array(n));
 }
+
+export function generateWalletFromEntropy(
+  generator: GeneratorType,
+  params: Record<string, unknown>,
+  entropy: Uint8Array,
+): WalletResult {
+  _entropyOverride = entropy;
+  return generateWallet(generator, params);
+}
+
+export { b58check };
 
 function genSeedPhrase(): string {
   return generateMnemonic(wordlist, 128);

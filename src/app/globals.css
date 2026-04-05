@@ -107,27 +107,20 @@ button:focus-visible {
     color: #111 !important;
   }
 
-  /* Hide everything via visibility (keeps layout so fixed positioning works) */
-  body * {
-    visibility: hidden !important;
+  /* Collapse all children of the React root — removes them from flow */
+  body > * > * {
+    display: none !important;
   }
 
-  /* Show only the print overlay and its children */
-  .print-overlay,
-  .print-overlay * {
-    visibility: visible !important;
-  }
-
+  /* Show only the print overlay */
   .print-overlay {
     display: block !important;
-    position: fixed;
-    inset: 0;
+    position: static;
     background: white;
     padding: 40px;
     max-width: 600px;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #111;
-    z-index: 99999;
   }
 }
