@@ -8,13 +8,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev       # Dev server on port 4403, bound to 0.0.0.0
 npm run build     # Production build (static export to out/)
 npm run start     # Serve production build on port 4403, bound to 0.0.0.0
+npm test          # Run vitest (26 tests: address format validation, uniqueness, randomness)
+npm run test:watch # Vitest in watch mode
 ```
 
-No test runner or linter is configured. TypeScript checking happens during `npm run build`.
+No linter is configured. TypeScript checking happens during `npm run build`.
 
 ## Architecture
 
-Client-side cryptocurrency wallet generator for 1000 coins. **Zero server-side logic** — Next.js is configured with `output: 'export'` for static HTML/JS only. All crypto runs in the browser via `crypto.getRandomValues()`.
+Client-side cryptocurrency wallet generator for 1000 coins (all IDs unique, verified by test). **Zero server-side logic** — Next.js is configured with `output: 'export'` for static HTML/JS only. All crypto runs in the browser via `crypto.getRandomValues()`.
 
 ### Three-layer design
 
